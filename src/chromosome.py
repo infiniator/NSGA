@@ -34,12 +34,12 @@ def calculateFitness(chromosome):
     for i in range(len(Chromosome.data)):  # for every task, do the following
         pre = []  # holds predecessors of i, including the forced predecessor
         p = chromosome[i]  # extract processor on which i is running
-        j = False
+        j = True
         for _ in range(i):  # find if i is the first task to run
             if chromosome[_] == p:
-                j = True
+                j = False
                 break
-        if j:  # if i isn't first task, find the task that runs just before i
+        if not j:  # if i isn't first task, find task that runs just before i
             for k in range(i - 1, -1, -1):
                 if p == chromosome[k]:  # forced predecessor
                     pre.append(Chromosome.data[k]['procID'])
@@ -47,14 +47,9 @@ def calculateFitness(chromosome):
             if 'pre' in k:
                 pre.append(Chromosome.data[i][k])
         if len(pre) > 0:
-            for i in range(len(pre)):
-                for j in range(len(Chromosome.data)):
-                    if Chromosome.data[j]['procID'] == pre[i]:
-                        pre[i] = Chromosome.data[j]['key']
-                        break
-            finishTime[i] = max(
-                [finishTime[j] for j in pre]
+            finishTime[Chromosome.data[i]['procID'] - 1] = max(
+                [finishTime[j - 1] for j in pre]
             ) + Chromosome.data[i]['procTime']
         else:
-            finishTime[i] = Chromosome.data[i]['procTime']
+            finishTime[Chromosome.data[i]['procID'] - 1] = Chromosome.data[i]['procTime']
     return max(finishTime),

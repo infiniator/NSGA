@@ -1,4 +1,6 @@
 import random
+import matplotlib.pyplot as plt
+from statistics import mean
 from deap import base
 from deap import creator
 from deap import tools
@@ -31,6 +33,7 @@ def main():
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
 
+    plotter = []
     for i in range(NGEN):
         pop = toolbox.select(pop, len(pop))
         offspring = tools.selTournamentDCD(pop, len(pop))
@@ -52,10 +55,12 @@ def main():
 
         # Select the next generation population
         pop = toolbox.select(pop + offspring, MU)
+        plotter.append(mean([k.fitness.values[0] for k in pop]))
 
-    for i in pop:
-        print(i, end='', flush=True)
-        print(i.fitness.values)
+    plt.plot(plotter)
+    plt.xlabel('Number of iterations')
+    plt.ylabel('Fitness of the population')
+    plt.show()
 
 
 main()
